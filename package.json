@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "start:server": "npm install --prefix server && npm start --prefix server",
     "dev:all": "concurrently \"vite\" \"npm start --prefix server\"",
-    "build:render": "npm install && npm run build && npm install --prefix server",
+    "build:render": "npm install --include=dev && npm run build && npm install --prefix server",
     "start:render": "node server/index.js"
   },
   "dependencies": {
