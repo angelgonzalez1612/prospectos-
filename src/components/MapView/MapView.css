@@ -236,3 +236,89 @@
   color: #1e1b4b;
   white-space: nowrap;
 }
+
+/* ── Sidebar toggle FAB (hidden on desktop, shown on mobile) ── */
+.sidebar-toggle {
+  display: none;
+  position: absolute;
+  bottom: 84px;
+  left: 16px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  font-size: 20px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, box-shadow 0.15s;
+  color: #374151;
+}
+
+.sidebar-toggle:hover { background: #f5f3ff; border-color: #a5b4fc; }
+
+/* Backdrop for mobile sidebar */
+.sidebar-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 49;
+  cursor: pointer;
+}
+
+/* ── Mobile (≤768px) ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Sidebar: fullscreen drawer */
+  .left-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 85vw;
+    max-width: 320px;
+    z-index: 50;
+    transform: translateX(-110%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f1f5f9;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 10px;
+    border-radius: 0;
+    pointer-events: auto; /* override desktop none */
+  }
+
+  .left-sidebar.sidebar--open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Show toggle FAB */
+  .sidebar-toggle { display: flex; }
+
+  /* Toasts: bottom area, avoid colliding with the heatmap btn */
+  .map-toast {
+    top: auto;
+    bottom: 100px;
+    right: 16px;
+    left: auto;
+    max-width: calc(100% - 32px);
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  /* Bottom info: always centered (no sidebar offset) */
+  .map-bottom-info {
+    left: 50% !important;
+    bottom: 60px; /* sit above the visible bottom-sheet handle */
+  }
+  .panel-open .map-bottom-info { left: 50% !important; }
+  .panel-open .route-panel      { left: 12px !important; }
+
+  /* Legend wraps on narrow screens */
+  .map-legend { flex-wrap: wrap; gap: 6px; font-size: 11px; }
+}

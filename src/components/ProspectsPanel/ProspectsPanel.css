@@ -479,3 +479,147 @@
 .pp-card__btn--wa  { background: #25d366; }
 .pp-card__btn--wa:hover { background: #128c7e; }
 
+/* ── Contact lookup ──────────────────────────────────────────── */
+.pp-card__contact {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pp-card__contact-btn {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border: 1px solid #c7d2fe;
+  border-radius: 20px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pp-card__contact-btn:hover {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+}
+
+.pp-card__contact-loading {
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pp-card__contact-spin {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  border-top-color: #4f46e5;
+  animation: fp-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+.pp-card__contact-found {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 7px;
+}
+
+.pp-card__contact-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #166534;
+}
+
+.pp-card__contact-none {
+  font-size: 10px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* ── Mobile: bottom sheet ────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Panel becomes a bottom sheet that peeks 48px when closed */
+  .pp {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    transform: translateY(calc(100% - 48px));
+    flex-direction: column;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+  }
+
+  .pp--open {
+    transform: translateY(0);
+  }
+
+  /* Tab becomes full-width handle at the top of the sheet */
+  .pp__tab {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    height: 48px;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  /* Drag handle indicator at top */
+  .pp__tab::before {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 2px;
+  }
+
+  /* Hide desktop chevrons, show label */
+  .pp__tab { font-size: 0; }
+  .pp__tab::after {
+    content: 'Prospectos ↑';
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 4px;
+  }
+  .pp--open .pp__tab::after {
+    content: 'Cerrar ↓';
+  }
+
+  /* Inner panel: scrollable */
+  .pp__inner {
+    border-radius: 0;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    max-height: calc(80vh - 48px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Wider quality pills for touch */
+  .pp__qpill { padding: 7px 8px; font-size: 12px; }
+
+  /* Bigger card actions for touch */
+  .pp-card__btn { padding: 6px 12px; font-size: 12px; }
+}
+

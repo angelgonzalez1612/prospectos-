@@ -48,6 +48,20 @@ function ProspectCard({ p, onFocus }) {
   const q     = getQuality(p)
   const score = calcScore(p)
   const color = scoreColor(score)
+  const [contact, setContact] = useState({ status: 'idle', nombre: null, email: null })
+
+  async function lookupContact(e) {
+    e.stopPropagation()
+    setContact({ status: 'loading', nombre: null, email: null })
+    try {
+      const res  = await fetch(`/api/contact?url=${encodeURIComponent(p.sitioWeb)}`)
+      const data = await res.json()
+      setContact({ status: 'done', nombre: data.nombre, email: data.email })
+    } catch {
+      setContact({ status: 'done', nombre: null, email: null })
+    }
+  }
+
   return (
     <div className={`pp-card pp-card--${q}`} onClick={() => onFocus(p)}>
       <div className="pp-card__header">
@@ -78,6 +92,47 @@ function ProspectCard({ p, onFocus }) {
         {p.email     && <div className="pp-card__row"><span className="pp-card__icon">✉️</span><a href={`mailto:${p.email}`} className="pp-card__link" onClick={e => e.stopPropagation()}>{p.email}</a></div>}
         {p.sitioWeb  && <div className="pp-card__row"><span className="pp-card__icon">🌐</span><a href={p.sitioWeb} target="_blank" rel="noreferrer" className="pp-card__link" onClick={e => e.stopPropagation()}>{p.sitioWeb.replace(/^https?:\/\//, '').split('/')[0]}</a></div>}
       </div>
+
+      {/* ── Búsqueda de contacto (solo si tiene web) ──────────── */}
+      {p.sitioWeb && (
+        <div className="pp-card__contact">
+          {contact.status === 'idle' && (
+            <button className="pp-card__contact-btn" onClick={lookupContact}>
+              🔍 Buscar contacto
+            </button>
+          )}
+
+          {contact.status === 'loading' && (
+            <span className="pp-card__contact-loading">
+              <span className="pp-card__contact-spin" />
+              Escaneando sitio web…
+            </span>
+          )}
+
+          {contact.status === 'done' && (contact.nombre || contact.email) && (
+            <div className="pp-card__contact-found">
+              {contact.nombre && (
+                <div className="pp-card__row">
+                  <span className="pp-card__icon">👤</span>
+                  <span className="pp-card__contact-name">{contact.nombre}</span>
+                </div>
+              )}
+              {contact.email && (
+                <div className="pp-card__row">
+                  <span className="pp-card__icon">✉️</span>
+                  <a href={`mailto:${contact.email}`} className="pp-card__link" onClick={e => e.stopPropagation()}>
+                    {contact.email}
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {contact.status === 'done' && !contact.nombre && !contact.email && (
+            <span className="pp-card__contact-none">Sin contacto encontrado en el sitio</span>
+          )}
+        </div>
+      )}
 
       {p.whatsapp && (
         <div className="pp-card__actions">

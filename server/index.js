@@ -6,8 +6,9 @@ const cors = require('cors')
 const prospectsRouter = require('./routes/prospects')
 const zonesRouter = require('./routes/zones')
 const exportRouter = require('./routes/export')
-const trendsRouter = require('./routes/trends')
-const intentRouter = require('./routes/intent')
+const trendsRouter  = require('./routes/trends')
+const intentRouter  = require('./routes/intent')
+const contactRouter = require('./routes/contact')
 
 const app = express()
 // PORT lo asigna Render en producción; en dev usa SERVER_PORT o 3001
@@ -22,7 +23,8 @@ app.use('/api/prospects', prospectsRouter)
 app.use('/api/zones', zonesRouter)
 app.use('/api/export', exportRouter)
 app.use('/api/trends', trendsRouter)
-app.use('/api/intent', intentRouter)
+app.use('/api/intent',  intentRouter)
+app.use('/api/contact', contactRouter)
 
 // En producción sirve el build de React y maneja el SPA routing
 if (isProd) {

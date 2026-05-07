@@ -116,3 +116,18 @@
   color: #9ca3af;
   line-height: 1.2;
 }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dbar {
+    left: 50% !important;
+    max-width: calc(100% - 24px);
+    top: 8px;
+    white-space: normal;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px 10px;
+  }
+  .panel-open .dbar { left: 50% !important; }
+  .dbar__divider { display: none; } /* too narrow for dividers on mobile */
+}

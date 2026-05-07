@@ -90,6 +90,7 @@ export default function MapView() {
   const [direccionCenter, setDireccionCenter] = useState(null)
   const [trendsData, setTrendsData]           = useState([])
   const [showHeatmap, setShowHeatmap]         = useState(false)
+  const [sidebarOpen, setSidebarOpen]         = useState(false)
 
   // Ref to cancel in-flight estado boundary requests when mode changes
   const estadoCallId = useRef(0)
@@ -343,7 +344,7 @@ export default function MapView() {
 
   const handleSearch = useCallback(async (g) => {
     setSelectedProspect(null)
-    // Si hay perfil con múltiples giros los buscamos en paralelo; si no, el giro único
+    setSidebarOpen(false) // close drawer on mobile when search starts
     const giros = selectedProfile?.giros ?? [g]
     if (mode === 'estado')         await search(giros, 'estado',    { estado, estadoZone,      radiusKm: 50      })
     else if (mode === 'municipio') await search(giros, 'municipio', { zone: municipioZone,     radiusKm: radioKm })
@@ -398,8 +399,22 @@ export default function MapView() {
 
   return (
     <div className={`map-wrapper${panelOpen ? ' panel-open' : ''}`}>
+      {/* Mobile: sidebar backdrop */}
+      {sidebarOpen && (
+        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Mobile: toggle FAB */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen(o => !o)}
+        aria-label="Abrir panel de filtros"
+      >
+        {sidebarOpen ? '✕' : '☰'}
+      </button>
+
       {/* ── Left sidebar: search + trends ─────────────────────────────── */}
-      <div className="left-sidebar">
+      <div className={`left-sidebar${sidebarOpen ? ' sidebar--open' : ''}`}>
         <FilterPanel
           selectedProfile={selectedProfile}     onProfileChange={setSelectedProfile}
           giro={giro}                           onGiroChange={setGiro}

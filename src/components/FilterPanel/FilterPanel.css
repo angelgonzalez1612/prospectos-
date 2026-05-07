@@ -394,6 +394,27 @@
   text-overflow: ellipsis;
 }
 
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .fp__profiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fp__profile-icon { font-size: 18px; }
+  .fp__profile-label { font-size: 9.5px; }
+
+  .fp__select, .fp__input {
+    font-size: 14px; /* prevent zoom on iOS */
+    padding: 8px 10px;
+  }
+
+  .fp__btn { min-height: 44px; font-size: 14px; }
+
+  .fp__mode-btn { padding: 8px 2px 7px; }
+  .fp__mode-btn__icon { font-size: 16px; }
+  .fp__mode-btn__label { font-size: 10px; }
+}
+
 /* Google Places Autocomplete */
 .pac-container {
   z-index: 9999 !important;

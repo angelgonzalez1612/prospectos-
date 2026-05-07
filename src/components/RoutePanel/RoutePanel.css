@@ -19,6 +19,18 @@
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .route-panel {
+    left: 12px !important;
+    right: 12px;
+    transform: none;
+    max-width: none;
+    width: auto;
+    top: 8px;
+  }
+}
+
 /* ── Header ──────────────────────────────────────────────────────────────── */
 
 .route-panel__header {
