@@ -96,24 +96,22 @@ export default function FilterPanel({
         </div>
       </div>
 
-      {/* ── Giro libre ────────────────────────────────────────────── */}
-      {!selectedProfile && (
-        <div className="fp__field">
-          <label className="fp__label">Giro</label>
-          <input
-            className="fp__input"
-            type="text"
-            list="fp-giros-list"
-            placeholder="Ej: restaurantes, talleres…"
-            value={giro}
-            onChange={e => handleGiroChange(e.target.value)}
-            autoComplete="off"
-          />
-          <datalist id="fp-giros-list">
-            {GIROS.map(g => <option key={g.value} value={g.label} />)}
-          </datalist>
-        </div>
-      )}
+      {/* ── Giro libre — siempre visible ─────────────────────────── */}
+      <div className="fp__field">
+        <label className="fp__label">Giro</label>
+        <input
+          className="fp__input"
+          type="text"
+          list="fp-giros-list"
+          placeholder="Ej: restaurantes, talleres…"
+          value={giro}
+          onChange={e => handleGiroChange(e.target.value)}
+          autoComplete="off"
+        />
+        <datalist id="fp-giros-list">
+          {GIROS.map(g => <option key={g.value} value={g.label} />)}
+        </datalist>
+      </div>
 
       {/* ── Tipo de búsqueda ─────────────────────────────────────── */}
       <div className="fp__mode-strip">
