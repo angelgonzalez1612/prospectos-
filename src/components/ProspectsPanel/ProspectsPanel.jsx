@@ -44,20 +44,88 @@ function getQuality(p) {
   return 'minimal'
 }
 
+function MoreSourcesSearch({ sources, onSearch }) {
+  if (sources.status === 'idle') {
+    return (
+      <button className="pp-card__web-btn" onClick={onSearch}>
+        🔍 Más fuentes
+      </button>
+    )
+  }
+  if (sources.status === 'loading') {
+    return (
+      <span className="pp-card__contact-loading">
+        <span className="pp-card__contact-spin" />
+        Buscando…
+      </span>
+    )
+  }
+  const { li = [], links = [] } = sources
+  if (li.length === 0 && links.length === 0) {
+    return <span className="pp-card__contact-none">Sin resultados</span>
+  }
+  return (
+    <div className="pp-card__li-results">
+      {li.length > 0 && (
+        <>
+          <span className="pp-card__li-label">LinkedIn</span>
+          {li.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noreferrer" className="pp-card__li-card" onClick={e => e.stopPropagation()}>
+              <span className="pp-card__li-icon">in</span>
+              <span className="pp-card__li-info">
+                <span className="pp-card__li-name">{r.nombre}</span>
+                {r.cargo && <span className="pp-card__li-cargo">{r.cargo}</span>}
+              </span>
+              <span className="pp-card__li-arrow">→</span>
+            </a>
+          ))}
+        </>
+      )}
+      {links.length > 0 && (
+        <>
+          <span className="pp-card__li-label" style={{ marginTop: li.length ? 6 : 0 }}>Buscar en</span>
+          {links.map((r, i) => (
+            <a key={i} href={r.url} target="_blank" rel="noreferrer" className="pp-card__web-card pp-card__web-card--link" onClick={e => e.stopPropagation()}>
+              <span className="pp-card__li-name" style={{ fontSize: 10 }}>{r.title}</span>
+              <span className="pp-card__li-arrow">→</span>
+            </a>
+          ))}
+        </>
+      )}
+    </div>
+  )
+}
+
 function ProspectCard({ p, onFocus, contact, onContactFound }) {
   const q     = getQuality(p)
   const score = calcScore(p)
   const color = scoreColor(score)
+  const [sources, setSources] = useState({ status: 'idle', li: [], links: [] })
+
+  async function searchSources(e) {
+    e.stopPropagation()
+    setSources({ status: 'loading', li: [], links: [] })
+    const enc = encodeURIComponent
+    const [liRes, webRes] = await Promise.allSettled([
+      fetch(`/api/contact/linkedin?name=${enc(p.nombre)}`).then(r => r.json()),
+      fetch(`/api/contact/web?name=${enc(p.nombre)}`).then(r => r.json()),
+    ])
+    setSources({
+      status: 'done',
+      li:    liRes.status  === 'fulfilled' ? (liRes.value.results  || []) : [],
+      links: webRes.status === 'fulfilled' ? (webRes.value.links   || []) : [],
+    })
+  }
 
   async function lookupContact(e) {
     e.stopPropagation()
-    onContactFound({ status: 'loading', nombre: null, email: null })
+    onContactFound({ status: 'loading', nombre: null, cargo: null, email: null })
     try {
       const res  = await fetch(`/api/contact?url=${encodeURIComponent(p.sitioWeb)}`)
       const data = await res.json()
-      onContactFound({ status: 'done', nombre: data.nombre, email: data.email })
+      onContactFound({ status: 'done', nombre: data.nombre, cargo: data.cargo, email: data.email })
     } catch {
-      onContactFound({ status: 'done', nombre: null, email: null })
+      onContactFound({ status: 'done', nombre: null, cargo: null, email: null })
     }
   }
 
@@ -92,7 +160,7 @@ function ProspectCard({ p, onFocus, contact, onContactFound }) {
         {p.sitioWeb  && <div className="pp-card__row"><span className="pp-card__icon">🌐</span><a href={p.sitioWeb} target="_blank" rel="noreferrer" className="pp-card__link" onClick={e => e.stopPropagation()}>{p.sitioWeb.replace(/^https?:\/\//, '').split('/')[0]}</a></div>}
       </div>
 
-      {/* ── Búsqueda de contacto (solo si tiene web) ──────────── */}
+      {/* ── Búsqueda de contacto ──────────────────────────────── */}
       {p.sitioWeb && (
         <div className="pp-card__contact">
           {contact.status === 'idle' && (
@@ -111,12 +179,14 @@ function ProspectCard({ p, onFocus, contact, onContactFound }) {
           {contact.status === 'done' && (contact.nombre || contact.email) && (
             <div className="pp-card__contact-found">
               {contact.nombre && (
-                <div className="pp-card__row">
-                  <span className="pp-card__icon">👤</span>
-                  <span className="pp-card__contact-name">{contact.nombre}</span>
+                <div className="pp-card__contact-person">
+                  <span className="pp-card__contact-name">👤 {contact.nombre}</span>
+                  {contact.cargo && (
+                    <span className="pp-card__contact-cargo">{contact.cargo}</span>
+                  )}
                 </div>
               )}
-              {contact.email && (
+              {contact.email && contact.email !== p.email && (
                 <div className="pp-card__row">
                   <span className="pp-card__icon">✉️</span>
                   <a href={`mailto:${contact.email}`} className="pp-card__link" onClick={e => e.stopPropagation()}>
@@ -124,12 +194,22 @@ function ProspectCard({ p, onFocus, contact, onContactFound }) {
                   </a>
                 </div>
               )}
+              <MoreSourcesSearch sources={sources} onSearch={searchSources} />
             </div>
           )}
 
           {contact.status === 'done' && !contact.nombre && !contact.email && (
-            <span className="pp-card__contact-none">Sin contacto encontrado en el sitio</span>
+            <div className="pp-card__contact-none">
+              <span>Sin contacto en el sitio web</span>
+              <MoreSourcesSearch sources={sources} onSearch={searchSources} />
+            </div>
           )}
+        </div>
+      )}
+
+      {!p.sitioWeb && (
+        <div className="pp-card__contact">
+          <MoreSourcesSearch sources={sources} onSearch={searchSources} />
         </div>
       )}
 
@@ -204,15 +284,10 @@ export default function ProspectsPanel({ prospects, isOpen, onClose, onOpen, onF
   async function handleExport() {
     setExp(true)
     try {
-      const prospectsWithContacts = filtered.map(p => ({
-        ...p,
-        contactoNombre: contacts[p.id]?.nombre || null,
-        contactoEmail:  contacts[p.id]?.email  || null,
-      }))
       const res = await fetch('/api/export/excel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prospects: prospectsWithContacts, meta }),
+        body: JSON.stringify({ prospects: filtered, meta }),
       })
       if (!res.ok) throw new Error('Error al exportar')
       const blob = await res.blob()
@@ -374,7 +449,7 @@ export default function ProspectsPanel({ prospects, isOpen, onClose, onOpen, onF
                 key={p.id || i}
                 p={p}
                 onFocus={onFocusProspect}
-                contact={contacts[p.id] || { status: 'idle', nombre: null, email: null }}
+                contact={contacts[p.id] || { status: 'idle', nombre: null, cargo: null, email: null }}
                 onContactFound={data => setContacts(prev => ({ ...prev, [p.id]: data }))}
               />
             ))

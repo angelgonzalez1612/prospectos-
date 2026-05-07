@@ -1,4 +1,4 @@
-.dbar {
+﻿.dbar {
   position: absolute;
   top: 12px;
   left: calc(50% + 139px);
@@ -107,7 +107,7 @@
 .dbar__rank-num {
   font-size: 14px;
   font-weight: 800;
-  color: #0d9488;
+  color: #18181b;
   line-height: 1;
 }
 

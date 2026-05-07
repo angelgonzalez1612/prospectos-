@@ -15,8 +15,8 @@ const app = express()
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3001
 const isProd = process.env.NODE_ENV === 'production'
 
-// En dev permite solo localhost:5173; en prod el frontend viene del mismo origen
-app.use(cors({ origin: isProd ? false : 'http://localhost:5173' }))
+// En dev permite cualquier puerto de localhost; en prod el frontend viene del mismo origen
+app.use(cors({ origin: isProd ? false : /^http:\/\/localhost(:\d+)?$/ }))
 app.use(express.json({ limit: '5mb' }))
 
 app.use('/api/prospects', prospectsRouter)
