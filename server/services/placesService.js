@@ -40,6 +40,33 @@ function getGiroTypes(giro) {
   return match ? GIRO_PLACE_TYPES[match] : []
 }
 
+// ── Ciudades secundarias por estado (para estados grandes) ────────────────────
+// Se añaden como anclas adicionales de búsqueda cuando el centroide no cubre todo
+const ESTADO_EXTRA_ANCHORS = {
+  'Sonora':              [{ lat: 27.4863, lng: -109.9298 }, { lat: 31.2974, lng: -110.9371 }, { lat: 27.9203, lng: -110.8981 }], // Obregón, Nogales, Guaymas
+  'Chihuahua':           [{ lat: 31.7360, lng: -106.4870 }, { lat: 27.0782, lng: -104.8987 }], // Juárez, Hidalgo del Parral
+  'Coahuila':            [{ lat: 25.4232, lng: -100.9963 }, { lat: 29.0553, lng: -100.9353 }, { lat: 28.7066, lng: -100.5100 }], // Saltillo, Piedras Negras, Acuña
+  'Coahuila de Zaragoza':[{ lat: 25.4232, lng: -100.9963 }, { lat: 29.0553, lng: -100.9353 }],
+  'Baja California':     [{ lat: 32.5030, lng: -117.0040 }, { lat: 31.8686, lng: -116.5965 }, { lat: 32.6245, lng: -115.4523 }], // Tijuana, Ensenada, Mexicali
+  'Baja California Sur': [{ lat: 23.2494, lng: -109.6842 }, { lat: 24.1426, lng: -110.3128 }], // Los Cabos, La Paz
+  'Sinaloa':             [{ lat: 24.8018, lng: -107.3939 }, { lat: 23.2494, lng: -106.4111 }, { lat: 25.7942, lng: -108.9877 }], // Culiacán, Mazatlán, Los Mochis
+  'Durango':             [{ lat: 23.6236, lng: -104.2963 }], // Durango city
+  'Jalisco':             [{ lat: 20.6595, lng: -103.3494 }, { lat: 21.1237, lng: -101.6762 }], // Guadalajara, Lagos de Moreno
+  'Veracruz':            [{ lat: 19.5438, lng:  -96.9269 }, { lat: 20.9672, lng:  -97.4114 }, { lat: 18.9242, lng:  -96.9269 }], // Jalapa, Poza Rica, Veracruz puerto
+  'Veracruz de Ignacio de la Llave': [{ lat: 19.5438, lng: -96.9269 }, { lat: 20.9672, lng: -97.4114 }],
+  'Tamaulipas':          [{ lat: 25.8701, lng:  -97.5026 }, { lat: 26.0374, lng:  -98.2933 }, { lat: 22.9917, lng:  -98.9949 }], // Matamoros, Reynosa, Tampico
+  'Guerrero':            [{ lat: 16.8631, lng:  -99.8826 }, { lat: 17.6388, lng: -101.5530 }], // Acapulco, Zihuatanejo
+  'Oaxaca':              [{ lat: 16.8583, lng:  -99.8883 }, { lat: 16.3268, lng:  -95.2296 }], // ciudad, Tehuantepec
+  'Quintana Roo':        [{ lat: 21.1743, lng:  -86.8466 }, { lat: 18.5036, lng:  -88.2961 }], // Cancún, Chetumal
+  'Michoacán':           [{ lat: 19.7060, lng: -101.1950 }, { lat: 19.1030, lng: -102.0688 }], // Morelia, Lázaro Cárdenas
+  'Michoacán de Ocampo': [{ lat: 19.7060, lng: -101.1950 }, { lat: 19.1030, lng: -102.0688 }],
+  'Zacatecas':           [{ lat: 22.7709, lng: -102.5832 }, { lat: 22.4487, lng: -102.9878 }], // capital, Guadalupe
+  'San Luis Potosí':     [{ lat: 22.1547, lng: -100.9757 }, { lat: 22.0000, lng:  -99.0160 }], // SLP, Valles
+  'Campeche':            [{ lat: 18.6519, lng:  -91.8271 }], // Campeche ciudad
+  'Yucatán':             [{ lat: 20.9674, lng:  -89.6237 }, { lat: 21.0381, lng:  -86.8761 }], // Mérida, Cancún side
+  'Chiapas':             [{ lat: 16.7569, lng:  -93.1292 }, { lat: 14.9102, lng:  -92.1521 }, { lat: 16.3005, lng:  -92.1179 }], // Tuxtla, Tapachula, San Cristóbal
+}
+
 // ── Helpers geométricos ────────────────────────────────────────────────────────
 
 function distanceMeters(lat1, lng1, lat2, lng2) {
@@ -201,29 +228,40 @@ async function searchPlaces(giro, estado, radiusMeters = 50_000, centroid = null
   const terms = getSearchTerms(giro)
   const types = getGiroTypes(giro)
 
-  const { points, dim } = buildGrid(center, 60_000)
-  const cRadius = calcCellRadius(60_000, dim)
+  // Anclas: centroide + ciudades secundarias del estado (cubre estados grandes)
+  const extraAnchors = ESTADO_EXTRA_ANCHORS[estado] || []
+  const allAnchors   = [center, ...extraAnchors]
+
+  // Grid de 60km alrededor de cada ancla
+  const GRID_R = 60_000
+  const { points: centerPoints, dim } = buildGrid(center, GRID_R)
+  const cRadius = calcCellRadius(GRID_R, dim)
+
+  // Puntos de grid de ciudades secundarias (3×3 o 2×2 según distancia)
+  const extraPoints = extraAnchors.flatMap(a => buildGrid(a, GRID_R).points)
 
   const allSearches = [
-    // A) Texto desde el centro — todos los términos con nombre del estado
-    ...terms.map(term =>
-      fetchPages({
-        query: `${term} en ${estado} México`, language: 'es', region: 'mx',
-        location: `${center.lat},${center.lng}`, radius: 50_000,
-      }, apiKey)
+    // A) Texto desde CADA ancla — todos los términos con nombre del estado
+    ...allAnchors.flatMap(anchor =>
+      terms.map(term =>
+        fetchPages({
+          query: `${term} en ${estado} México`, language: 'es', region: 'mx',
+          location: `${anchor.lat},${anchor.lng}`, radius: 50_000,
+        }, apiKey)
+      )
     ),
 
-    // B) Texto desde cada celda del grid — término principal
-    ...points.map(pt =>
+    // B) Texto desde cada celda del grid completo — término principal
+    ...[...centerPoints, ...extraPoints].map(pt =>
       fetchPages({
         query: `${terms[0]} en ${estado} México`, language: 'es', region: 'mx',
         location: `${pt.lat},${pt.lng}`, radius: cRadius,
       }, apiKey)
     ),
 
-    // C) Nearby por tipo desde cada celda
+    // C) Nearby por tipo desde cada celda del grid
     ...types.flatMap(type =>
-      points.map(pt =>
+      [...centerPoints, ...extraPoints].map(pt =>
         fetchNearbyPages({
           location: `${pt.lat},${pt.lng}`,
           radius: cRadius, type, language: 'es',
@@ -234,7 +272,7 @@ async function searchPlaces(giro, estado, radiusMeters = 50_000, centroid = null
 
   const results = await Promise.all(allSearches)
   const all = dedup(results.flat()).filter(isMexicoResult)
-  console.log(`[estado] raw:${results.flat().length} dedup:${all.length}`)
+  console.log(`[estado] anchors:${allAnchors.length} raw:${results.flat().length} dedup:${all.length}`)
   return formatResults(all.slice(0, 150), apiKey)
 }
 

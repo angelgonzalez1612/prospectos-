@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import { MAP_STYLE } from '../../constants/mapStyle'
 import FilterPanel       from '../FilterPanel/FilterPanel'
@@ -108,6 +108,7 @@ export default function MapView() {
   const directionsRendererRef = useRef(null)
   const infoWindowRef         = useRef(null)
   const iwContainerRef        = useRef(null)
+  const iwRootRef             = useRef(null)
   const routePairRef          = useRef('')
   const modeRef               = useRef(mode)
   const heatmapRef            = useRef(null)
@@ -246,12 +247,29 @@ export default function MapView() {
                     : null
 
   // Abrir/cerrar InfoWindow según prospecto seleccionado
+  // Usa domready + createRoot para garantizar que el contenido React
+  // se renderiza DESPUÉS de que Google Maps prepara el DOM del popup
   useEffect(() => {
     const iw = infoWindowRef.current
-    if (!iw) return
-    if (!selectedProspect?.lat || routeOrigin) { iw.close(); return }
+    const container = iwContainerRef.current
+    if (!iw || !container) return
+
+    if (!selectedProspect?.lat || routeOrigin) {
+      iw.close()
+      return
+    }
+
     iw.setPosition({ lat: selectedProspect.lat, lng: selectedProspect.lng })
     iw.open(mapRef.current)
+
+    const listener = iw.addListener('domready', () => {
+      if (!iwRootRef.current) {
+        iwRootRef.current = createRoot(container)
+      }
+      iwRootRef.current.render(<CompanyInfoWindow company={selectedProspect} />)
+    })
+
+    return () => window.google?.maps.event.removeListener(listener)
   }, [selectedProspect, routeOrigin]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Obtener tiempos de todos los modos cuando cambia el par origen/destino
@@ -524,11 +542,6 @@ export default function MapView() {
         )}
 
       </GoogleMap>
-
-      {/* Portal de contenido del InfoWindow nativo */}
-      {!showHeatmap && selectedProspect && !routeOrigin && iwContainerRef.current &&
-        createPortal(<CompanyInfoWindow company={selectedProspect} />, iwContainerRef.current)
-      }
 
       {/* Barra de demanda — top center cuando hay estado/municipio seleccionado */}
       {trendZone && zoneDemand && !routeOrigin && (
