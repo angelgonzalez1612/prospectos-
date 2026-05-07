@@ -28,8 +28,8 @@ const SCORE_COLORS = {
   'Mínimo':     { fg: '6B7280', bg: 'F3F4F6' },
 }
 
-const PURPLE = '4F46E5'
-const PURPLE_LIGHT = 'EEF2FF'
+const PURPLE = '0D9488'
+const PURPLE_LIGHT = 'F0FDFA'
 const GREEN  = '16A34A'
 const GREEN_BG = 'DCFCE7'
 const ORANGE = 'F97316'
@@ -39,19 +39,21 @@ const RED_BG = 'FEF2F2'
 const GRAY_ROW = 'F9FAFB'
 
 const COLUMNS = [
-  { header: 'Nombre',          key: 'nombre',      width: 36 },
-  { header: 'Dirección',       key: 'direccion',   width: 42 },
-  { header: 'Teléfono',        key: 'telefono',    width: 18 },
-  { header: 'Email',           key: 'email',       width: 32 },
-  { header: 'Sitio Web',       key: 'sitioWeb',    width: 30 },
-  { header: 'WhatsApp',        key: 'whatsapp',    width: 18 },
-  { header: 'Facebook',        key: 'facebook',    width: 30 },
-  { header: 'Instagram',       key: 'instagram',   width: 30 },
-  { header: 'LinkedIn',        key: 'linkedin',    width: 30 },
-  { header: 'Calificación',    key: 'rating',      width: 14 },
-  { header: 'Reseñas',         key: 'reviewCount', width: 12 },
-  { header: 'Calidad',         key: 'calidad',     width: 16 },
-  { header: 'Potencial',       key: 'potencial',   width: 16 },
+  { header: 'Nombre',             key: 'nombre',          width: 36 },
+  { header: 'Dirección',          key: 'direccion',        width: 42 },
+  { header: 'Teléfono',           key: 'telefono',         width: 18 },
+  { header: 'Email',              key: 'email',            width: 32 },
+  { header: 'Sitio Web',          key: 'sitioWeb',         width: 30 },
+  { header: 'WhatsApp',           key: 'whatsapp',         width: 18 },
+  { header: 'Facebook',           key: 'facebook',         width: 30 },
+  { header: 'Instagram',          key: 'instagram',        width: 30 },
+  { header: 'LinkedIn',           key: 'linkedin',         width: 30 },
+  { header: 'Calificación',       key: 'rating',           width: 14 },
+  { header: 'Reseñas',            key: 'reviewCount',      width: 12 },
+  { header: 'Calidad',            key: 'calidad',          width: 16 },
+  { header: 'Potencial',          key: 'potencial',        width: 16 },
+  { header: 'Contacto (Nombre)',  key: 'contactoNombre',   width: 28 },
+  { header: 'Contacto (Email)',   key: 'contactoEmail',    width: 32 },
 ]
 
 function getQuality(p) {
@@ -85,7 +87,7 @@ router.post('/excel', async (req, res) => {
   ws.columns = COLUMNS
 
   // ── Fila 1: Título ─────────────────────────────────────────────────────────
-  ws.mergeCells('A1:M1')
+  ws.mergeCells('A1:O1')
   const titleCell = ws.getCell('A1')
   titleCell.value = '📋  REPORTE DE PROSPECTOS'
   titleCell.font  = { bold: true, size: 15, color: { argb: 'FFFFFFFF' } }
@@ -94,7 +96,7 @@ router.post('/excel', async (req, res) => {
   ws.getRow(1).height = 36
 
   // ── Fila 2: Metadatos ───────────────────────────────────────────────────────
-  ws.mergeCells('A2:M2')
+  ws.mergeCells('A2:O2')
   const metaCell = ws.getCell('A2')
   const parts = []
   if (meta.giro)  parts.push(`Giro: ${meta.giro}`)
@@ -108,7 +110,7 @@ router.post('/excel', async (req, res) => {
   ws.getRow(2).height = 22
 
   // ── Fila 3: Spacer ──────────────────────────────────────────────────────────
-  ws.mergeCells('A3:M3')
+  ws.mergeCells('A3:O3')
   ws.getCell('A3').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } }
   ws.getRow(3).height = 6
 
@@ -121,7 +123,7 @@ router.post('/excel', async (req, res) => {
   })
   headerRow.height = 28
 
-  ws.autoFilter = { from: 'A4', to: 'M4' }
+  ws.autoFilter = { from: 'A4', to: 'O4' }
 
   // ── Filas de datos ─────────────────────────────────────────────────────────
   prospects.forEach((p, i) => {
@@ -132,19 +134,21 @@ router.post('/excel', async (req, res) => {
     const potColor = SCORE_COLORS[potLabel] || SCORE_COLORS['Mínimo']
 
     const row = ws.addRow({
-      nombre:      p.nombre      || '',
-      direccion:   p.direccion   || '',
-      telefono:    p.telefono    || '',
-      email:       p.email       || '',
-      sitioWeb:    p.sitioWeb    || '',
-      whatsapp:    p.whatsapp    || '',
-      facebook:    p.facebook    || '',
-      instagram:   p.instagram   || '',
-      linkedin:    p.linkedin    || '',
-      rating:      p.rating      ?? '',
-      reviewCount: p.reviewCount ?? '',
-      calidad:     quality.label,
-      potencial:   `${potLabel} (${score}/100)`,
+      nombre:          p.nombre          || '',
+      direccion:       p.direccion       || '',
+      telefono:        p.telefono        || '',
+      email:           p.email           || '',
+      sitioWeb:        p.sitioWeb        || '',
+      whatsapp:        p.whatsapp        || '',
+      facebook:        p.facebook        || '',
+      instagram:       p.instagram       || '',
+      linkedin:        p.linkedin        || '',
+      rating:          p.rating          ?? '',
+      reviewCount:     p.reviewCount     ?? '',
+      calidad:         quality.label,
+      potencial:       `${potLabel} (${score}/100)`,
+      contactoNombre:  p.contactoNombre  || '',
+      contactoEmail:   p.contactoEmail   || '',
     })
     row.height = 20
 
@@ -181,11 +185,11 @@ router.post('/excel', async (req, res) => {
       // Hyperlinks
       if (colKey === 'sitioWeb' && p.sitioWeb) {
         cell.value  = { text: p.sitioWeb.replace(/^https?:\/\//, '').split('/')[0], hyperlink: p.sitioWeb }
-        cell.font   = { size: 10, color: { argb: 'FF4F46E5' }, underline: true }
+        cell.font   = { size: 10, color: { argb: 'FF0D9488' }, underline: true }
       }
       if (colKey === 'email' && p.email) {
         cell.value  = { text: p.email, hyperlink: `mailto:${p.email}` }
-        cell.font   = { size: 10, color: { argb: 'FF4F46E5' }, underline: true }
+        cell.font   = { size: 10, color: { argb: 'FF0D9488' }, underline: true }
       }
       if (colKey === 'facebook' && p.facebook) {
         cell.value  = { text: 'Facebook', hyperlink: p.facebook }
@@ -198,6 +202,15 @@ router.post('/excel', async (req, res) => {
       if (colKey === 'linkedin' && p.linkedin) {
         cell.value  = { text: 'LinkedIn', hyperlink: p.linkedin }
         cell.font   = { size: 10, color: { argb: 'FF0077B5' }, underline: true }
+      }
+      if (colKey === 'contactoNombre' && p.contactoNombre) {
+        cell.fill = bgFill('FF' + GREEN_BG)
+        cell.font = { bold: true, size: 10, color: { argb: 'FF' + GREEN } }
+      }
+      if (colKey === 'contactoEmail' && p.contactoEmail) {
+        cell.value = { text: p.contactoEmail, hyperlink: `mailto:${p.contactoEmail}` }
+        cell.fill  = bgFill('FF' + GREEN_BG)
+        cell.font  = { size: 10, color: { argb: 'FF' + GREEN }, underline: true }
       }
 
       cell.border = {

@@ -30,8 +30,8 @@ const HEATMAP_GRADIENT = [
 ]
 const MEXICO_CENTER = { lat: 23.6345, lng: -102.5528 }
 const MAP_OPTIONS = {
-  zoomControl: true, streetViewControl: false,
-  mapTypeControl: false, fullscreenControl: true,
+  zoomControl: false, streetViewControl: false,
+  mapTypeControl: false, fullscreenControl: false,
   clickableIcons: false,
   styles: MAP_STYLE,
 }
@@ -123,7 +123,7 @@ export default function MapView() {
     directionsServiceRef.current = new window.google.maps.DirectionsService()
     directionsRendererRef.current = new window.google.maps.DirectionsRenderer({
       suppressMarkers: true,
-      polylineOptions: { strokeColor: '#4f46e5', strokeWeight: 5, strokeOpacity: 0.85 },
+      polylineOptions: { strokeColor: '#0d9488', strokeWeight: 5, strokeOpacity: 0.85 },
     })
 
     // InfoWindow imperativo — evita el bug de portal vacío de @react-google-maps/api

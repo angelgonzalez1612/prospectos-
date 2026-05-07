@@ -44,21 +44,20 @@ function getQuality(p) {
   return 'minimal'
 }
 
-function ProspectCard({ p, onFocus }) {
+function ProspectCard({ p, onFocus, contact, onContactFound }) {
   const q     = getQuality(p)
   const score = calcScore(p)
   const color = scoreColor(score)
-  const [contact, setContact] = useState({ status: 'idle', nombre: null, email: null })
 
   async function lookupContact(e) {
     e.stopPropagation()
-    setContact({ status: 'loading', nombre: null, email: null })
+    onContactFound({ status: 'loading', nombre: null, email: null })
     try {
       const res  = await fetch(`/api/contact?url=${encodeURIComponent(p.sitioWeb)}`)
       const data = await res.json()
-      setContact({ status: 'done', nombre: data.nombre, email: data.email })
+      onContactFound({ status: 'done', nombre: data.nombre, email: data.email })
     } catch {
-      setContact({ status: 'done', nombre: null, email: null })
+      onContactFound({ status: 'done', nombre: null, email: null })
     }
   }
 
@@ -153,6 +152,7 @@ export default function ProspectsPanel({ prospects, isOpen, onClose, onOpen, onF
   const [quality, setQuality]         = useState('all')
   const [sort, setSort]               = useState('default')
   const [exporting, setExp]           = useState(false)
+  const [contacts, setContacts]       = useState({}) // keyed by prospect id
 
   // Filtros avanzados
   const [advOpen, setAdvOpen]         = useState(false)
@@ -204,10 +204,15 @@ export default function ProspectsPanel({ prospects, isOpen, onClose, onOpen, onF
   async function handleExport() {
     setExp(true)
     try {
+      const prospectsWithContacts = filtered.map(p => ({
+        ...p,
+        contactoNombre: contacts[p.id]?.nombre || null,
+        contactoEmail:  contacts[p.id]?.email  || null,
+      }))
       const res = await fetch('/api/export/excel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prospects: filtered, meta }),
+        body: JSON.stringify({ prospects: prospectsWithContacts, meta }),
       })
       if (!res.ok) throw new Error('Error al exportar')
       const blob = await res.blob()
@@ -365,7 +370,13 @@ export default function ProspectsPanel({ prospects, isOpen, onClose, onOpen, onF
             </p>
           ) : (
             filtered.map((p, i) => (
-              <ProspectCard key={p.id || i} p={p} onFocus={onFocusProspect} />
+              <ProspectCard
+                key={p.id || i}
+                p={p}
+                onFocus={onFocusProspect}
+                contact={contacts[p.id] || { status: 'idle', nombre: null, email: null }}
+                onContactFound={data => setContacts(prev => ({ ...prev, [p.id]: data }))}
+              />
             ))
           )}
         </div>
