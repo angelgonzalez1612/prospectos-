@@ -1,0 +1,148 @@
+.route-panel {
+  position: absolute;
+  /* center between sidebar (326px left) and ProspectsPanel tab (48px right)
+     midpoint = 326 + (100% - 326 - 48) / 2 = 50% + 139px               */
+  top: 12px;
+  left: calc(50% + 139px);
+  transform: translateX(-50%);
+  z-index: 20;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  max-width: min(500px, calc(100% - 374px));
+  pointer-events: all;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.route-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.route-panel__dest-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.route-panel__dest {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e1b4b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-panel__addr {
+  font-size: 10px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.route-panel__share-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+  min-width: 110px;
+  justify-content: center;
+}
+.route-panel__share-btn:hover { background: #4338ca; }
+
+.route-panel__close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+}
+.route-panel__close-btn:hover { color: #475569; }
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+
+.route-panel__tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.route-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 7px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+}
+
+.route-tab:hover:not(.route-tab--active) {
+  border-color: #a5b4fc;
+  background: #f5f3ff;
+}
+
+.route-tab--active {
+  border-color: #4f46e5;
+  background: #eef2ff;
+}
+
+.route-tab__icon { font-size: 15px; line-height: 1; }
+
+.route-tab__label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.route-tab--active .route-tab__label { color: #6366f1; }
+
+.route-tab__time {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e1b4b;
+}
+
+.route-tab--active .route-tab__time { color: #4f46e5; }
+
+.route-tab__dist {
+  font-size: 9px;
+  color: #9ca3af;
+}

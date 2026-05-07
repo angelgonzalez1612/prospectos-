@@ -1,0 +1,118 @@
+.dbar {
+  position: absolute;
+  top: 12px;
+  left: calc(50% + 139px);
+  transform: translateX(-50%);
+  z-index: 20;
+  background: white;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+  padding: 7px 14px 7px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: min(560px, calc(100% - 374px));
+  white-space: nowrap;
+}
+
+/* Shift when ProspectsPanel is open */
+.panel-open .dbar { left: calc(50% - 27px); }
+
+/* ── Estado ─────────────────────────────── */
+.dbar__estado {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.dbar__pin { font-size: 13px; }
+
+.dbar__name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e1b4b;
+}
+
+/* ── Divider ────────────────────────────── */
+.dbar__divider {
+  width: 1px;
+  height: 22px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* ── Score KPI ──────────────────────────── */
+.dbar__kpi {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.dbar__kpi-icon { font-size: 14px; line-height: 1; }
+
+.dbar__kpi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dbar__kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dbar__kpi-track {
+  width: 52px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dbar__kpi-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.dbar__kpi-score {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dbar__kpi-max {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* ── Ranking ────────────────────────────── */
+.dbar__rank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dbar__rank-num {
+  font-size: 14px;
+  font-weight: 800;
+  color: #4f46e5;
+  line-height: 1;
+}
+
+.dbar__rank-of {
+  font-size: 9px;
+  color: #9ca3af;
+  line-height: 1.2;
+}

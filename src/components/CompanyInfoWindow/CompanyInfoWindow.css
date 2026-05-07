@@ -1,0 +1,114 @@
+.iw {
+  padding: 4px 2px;
+  max-width: 270px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Header */
+.iw__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.iw__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e1b4b;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.iw__badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.iw__badge--full    { background: #dcfce7; color: #166534; }
+.iw__badge--partial { background: #fef9c3; color: #854d0e; }
+.iw__badge--minimal { background: #f3f4f6; color: #4b5563; }
+
+/* Rows */
+.iw__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.iw__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.iw__row--extra { opacity: 0.75; }
+
+.iw__icon { flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+.iw__link {
+  color: #4f46e5;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.iw__link:hover { text-decoration: underline; }
+
+/* Social */
+.iw__social {
+  display: flex;
+  gap: 6px;
+}
+
+.iw__social-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+  transition: opacity 0.15s;
+}
+
+.iw__social-btn:hover { opacity: 0.85; }
+.iw__social-btn--fb { background: #1877f2; }
+.iw__social-btn--ig { background: #e1306c; }
+.iw__social-btn--li { background: #0077b5; }
+
+/* Acciones */
+.iw__actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.iw__btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  background: #4f46e5;
+  color: white;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.iw__btn:hover           { background: #4338ca; }
+.iw__btn--wa             { background: #25d366; }
+.iw__btn--wa:hover       { background: #128c7e; }
+.iw__btn--email          { background: #f59e0b; }
+.iw__btn--email:hover    { background: #d97706; }
