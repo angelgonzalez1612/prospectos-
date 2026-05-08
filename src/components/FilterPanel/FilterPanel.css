@@ -21,6 +21,26 @@
 /* Section wrapper */
 .fp__section { display: flex; flex-direction: column; gap: 5px; }
 
+.fp__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fp__customize-btn {
+  background: none;
+  border: none;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 5px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.fp__customize-btn:hover { color: #18181b; background: #f1f5f9; }
+
 /* Profile cards grid */
 .fp__profiles {
   display: grid;
@@ -383,6 +403,67 @@
   text-align: center;
   margin: 0;
   line-height: 1.4;
+}
+
+/* ── Indicador de búsqueda por estado ────────────────────────────────────── */
+.fp__estado-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  animation: fp-fadein 0.3s ease;
+}
+
+@keyframes fp-fadein { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.fp__estado-bar {
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fp__estado-bar-fill {
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(90deg, #18181b 0%, #6b7280 100%);
+  border-radius: 2px;
+  animation: fp-sweep 2.2s ease-in-out infinite;
+}
+
+@keyframes fp-sweep {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(340%); }
+}
+
+.fp__estado-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.fp__estado-msg {
+  font-size: 10px;
+  font-weight: 500;
+  color: #374151;
+  flex: 1;
+}
+
+.fp__estado-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.fp__estado-hint {
+  font-size: 9.5px;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+  text-align: center;
 }
 
 /* Address badge */

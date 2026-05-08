@@ -125,7 +125,7 @@
 .map-overlay {
   position: absolute;
   inset: 0;
-  z-index: 15;
+  z-index: 25;   /* encima del DemandBar (z-index 20) */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -140,10 +140,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   background: white;
   border-radius: 20px;
-  padding: 32px 48px;
+  padding: 32px 40px;
+  width: min(360px, calc(100vw - 48px));
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   pointer-events: auto;
   animation: overlay-box-in 0.2s ease;
@@ -199,6 +200,51 @@
   margin: 0;
   font-size: 12px;
   color: #9ca3af;
+  text-align: center;
+}
+
+/* ── Barra de progreso estado ────────────────────────────────────────────── */
+.map-overlay__bar {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.map-overlay__bar-fill {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, #18181b 0%, #6b7280 100%);
+  border-radius: 2px;
+  animation: map-sweep 2s ease-in-out infinite;
+}
+
+@keyframes map-sweep {
+  0%   { transform: translateX(-150%); }
+  100% { transform: translateX(400%); }
+}
+
+.map-overlay__status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.map-overlay__msg {
+  font-size: 12px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.map-overlay__time {
+  font-size: 13px;
+  font-weight: 700;
+  color: #18181b;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
 }
 
 .map-heatmap-btn {

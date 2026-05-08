@@ -172,6 +172,48 @@ const GIRO_SYNONYMS = {
     'tienda de lujo',
   ],
 
+  /* ── Restaurantes y bares ── */
+  'restaurantes y bares': [
+    'restaurante',
+    'bar',
+    'marisquería',
+    'cervecería',
+    'steakhouse',
+    'antojitos',
+    'fonda',
+    'cadena de restaurantes',
+  ],
+
+  /* ── Salud complementaria ── */
+  'clínicas y consultorios': [
+    'clínica médica',
+    'consultorio médico',
+    'laboratorio clínico',
+    'centro de salud privado',
+    'clínica de especialidades',
+    'consultorio dental',
+    'clínica estética',
+  ],
+  'farmacias': [
+    'farmacia',
+    'farmacia de especialidades',
+    'droguería',
+    'cadena farmacéutica',
+    'botica',
+    'farmacia de turno',
+  ],
+
+  /* ── Despachos profesionales ── */
+  'despachos profesionales': [
+    'despacho de abogados',
+    'notaría',
+    'despacho contable',
+    'firma de contadores',
+    'despacho jurídico',
+    'firma de auditoría',
+    'despacho fiscal',
+  ],
+
   /* ── Construcción / infraestructura ── */
   'constructoras': [
     'constructora',
@@ -179,6 +221,47 @@ const GIRO_SYNONYMS = {
     'inmobiliaria',
     'desarrolladora inmobiliaria',
     'empresa de construcción',
+  ],
+  'empresas constructoras': [
+    'constructora',
+    'empresa constructora',
+    'desarrolladora inmobiliaria',
+    'contratista de obra',
+    'inmobiliaria',
+    'empresa de construcción',
+  ],
+
+  /* ── Estadios y recintos culturales ── */
+  'estadios y recintos': [
+    'estadio',
+    'arena',
+    'auditorio',
+    'teatro',
+    'foro cultural',
+    'recinto ferial',
+    'centro de convenciones',
+    'palenque',
+  ],
+
+  /* ── Aeropuertos y terminales ── */
+  'aeropuertos y terminales': [
+    'aeropuerto',
+    'terminal aérea',
+    'terminal de autobuses',
+    'central camionera',
+    'hangar',
+    'aeródromo',
+  ],
+
+  /* ── Plantas y subestaciones ── */
+  'plantas y subestaciones': [
+    'planta eléctrica',
+    'subestación eléctrica',
+    'planta de tratamiento de agua',
+    'planta de gas',
+    'subestación de energía',
+    'planta potabilizadora',
+    'central eléctrica',
   ],
 
   /* ── Transporte ── */

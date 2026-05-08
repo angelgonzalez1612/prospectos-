@@ -1,7 +1,9 @@
-import { GIROS }       from '../../constants/giros'
-import { ESTADOS }     from '../../constants/estados'
-import { PROFILES }    from '../../constants/profiles'
-import AddressSearch   from '../AddressSearch/AddressSearch'
+import { useState } from 'react'
+import { GIROS }            from '../../constants/giros'
+import { ESTADOS }          from '../../constants/estados'
+import { useProfiles }      from '../../hooks/useProfiles'
+import ProfileEditorModal   from '../ProfileEditorModal/ProfileEditorModal'
+import AddressSearch        from '../AddressSearch/AddressSearch'
 import './FilterPanel.css'
 
 const MODES = [
@@ -21,9 +23,20 @@ export default function FilterPanel({
   direccionCenter, onDireccionSelect, onClearDireccion,
   onSearch, isLoading, isLoadingZone,
 }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  const { allProfiles, updateGiros, resetProfile } = useProfiles()
+
+  // Normaliza el giro: si coincide con un label predefinido, devuelve el value
+  // Esto evita que "Plazas / centros comerciales" llegue al servidor en vez de "plazas comerciales"
+  function normalizeGiro(g) {
+    const lower = g.toLowerCase().trim()
+    const found = GIROS.find(gg => gg.label.toLowerCase() === lower)
+    return found ? found.value : lower
+  }
+
   const giroFinal = selectedProfile
     ? selectedProfile.giros[0]
-    : giro.trim()
+    : normalizeGiro(giro.trim())
 
   const hasZone = (() => {
     if (mode === 'estado')    return !!estado
@@ -74,9 +87,14 @@ export default function FilterPanel({
 
       {/* ── Perfiles ──────────────────────────────────────────────── */}
       <div className="fp__section">
-        <span className="fp__label">Perfil de cliente</span>
+        <div className="fp__section-header">
+          <span className="fp__label">Perfil de cliente</span>
+          <button className="fp__customize-btn" type="button" onClick={() => setModalOpen(true)}>
+            ✏️ Personalizar
+          </button>
+        </div>
         <div className="fp__profiles">
-          {PROFILES.map(p => (
+          {allProfiles.map(p => (
             <button
               key={p.key}
               type="button"
@@ -95,6 +113,15 @@ export default function FilterPanel({
           ))}
         </div>
       </div>
+
+      {modalOpen && (
+        <ProfileEditorModal
+          profiles={allProfiles}
+          onUpdateGiros={updateGiros}
+          onResetProfile={resetProfile}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
 
       {/* ── Giro libre — siempre visible ─────────────────────────── */}
       <div className="fp__field">

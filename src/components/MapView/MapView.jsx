@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { createRoot } from 'react-dom/client'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import { MAP_STYLE } from '../../constants/mapStyle'
@@ -112,6 +112,34 @@ export default function MapView() {
   const routePairRef          = useRef('')
   const modeRef               = useRef(mode)
   const heatmapRef            = useRef(null)
+
+  // ── Elapsed timer for estado searches ─────────────────────────────────────
+  const [elapsed, setElapsed] = useState(0)
+  const elapsedTimer = useRef(null)
+
+  useEffect(() => {
+    if (isLoading && mode === 'estado') {
+      setElapsed(0)
+      elapsedTimer.current = setInterval(() => setElapsed(s => s + 1), 1000)
+    } else {
+      clearInterval(elapsedTimer.current)
+      setElapsed(0)
+    }
+    return () => clearInterval(elapsedTimer.current)
+  }, [isLoading, mode])
+
+  function overlayMsg(s) {
+    if (s < 8)  return 'Iniciando búsqueda por municipios…'
+    if (s < 25) return 'Buscando en múltiples ciudades…'
+    if (s < 55) return 'Recopilando resultados…'
+    if (s < 90) return 'Procesando datos, casi listo…'
+    return 'Consolidando resultados finales…'
+  }
+
+  function fmtTime(s) {
+    const m = Math.floor(s / 60), sec = s % 60
+    return `${m}:${String(sec).padStart(2, '0')}`
+  }
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -506,8 +534,26 @@ export default function MapView() {
         <div className="map-overlay">
           <div className="map-overlay__box">
             <div className="map-overlay__spinner" />
-            <p className="map-overlay__text">Buscando prospectos…</p>
-            <p className="map-overlay__sub">puede tardar hasta 30 s por giro</p>
+            <p className="map-overlay__text">
+              {mode === 'estado' && estado
+                ? `Buscando en ${estado}…`
+                : 'Buscando prospectos…'}
+            </p>
+
+            {mode === 'estado' ? (
+              <>
+                <div className="map-overlay__bar">
+                  <div className="map-overlay__bar-fill" />
+                </div>
+                <div className="map-overlay__status">
+                  <span className="map-overlay__msg">{overlayMsg(elapsed)}</span>
+                  <span className="map-overlay__time">{fmtTime(elapsed)}</span>
+                </div>
+                <p className="map-overlay__sub">Analiza múltiples municipios — 1 a 3 min aprox.</p>
+              </>
+            ) : (
+              <p className="map-overlay__sub">puede tardar hasta 30 s por giro</p>
+            )}
           </div>
         </div>
       )}
